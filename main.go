@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/theisaachome/eWallet-platform/cmd/ewallet"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	ewallet.StartApplication()
 }
