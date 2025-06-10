@@ -35,4 +35,5 @@ type WalletBalance struct {
 	PublicID string  `json:"public_id"`
 	Balance  float64 `json:"balance"`
 	Currency string  `json:"currency"`
+	Status   string  `json:"status"`
 }

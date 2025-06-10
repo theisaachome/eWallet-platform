@@ -33,12 +33,17 @@ func GetWalletRouter() *mux.Router {
 	authService := auth.NewAuthService(userRepo, walletService, jwtService)
 	authHandler := handlers.NewAuthHandler(authService)
 
+	walletHandler := handlers.NewWalletHandler(walletService)
+
 	// Setup routes
 	api := router.PathPrefix("/wallet/api").Subrouter()
 	api.HandleFunc("/users", userHandler.NewUser).Methods("POST")
 	// Auth routers
 	api.HandleFunc("/auth/register", authHandler.Register).Methods("POST")
 	api.HandleFunc("/auth/login", authHandler.Login).Methods("POST")
+
+	// wallet handler
+	api.HandleFunc("/wallet/balance", walletHandler.GetWalletBalance).Methods("GET")
 
 	return router
 }
