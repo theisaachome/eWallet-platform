@@ -7,6 +7,7 @@ const (
 	ErrUnauthorized   = "UNAUTHORIZED"
 	ErrNotFound       = "NOT_FOUND"
 	ErrInternalServer = "INTERNAL_SERVER_ERROR"
+	BadCredentials    = "BAD_CREDENTIALS"
 )
 
 type AppError struct {

@@ -9,12 +9,21 @@ DO $$
         END IF;
     END$$;
 
+
 -- Create users table
 CREATE TABLE users (
                        id BIGSERIAL PRIMARY KEY,
                        public_id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
                        phone_number VARCHAR(20) UNIQUE NOT NULL,
-                       email VARCHAR(100) UNIQUE,
+                       hash_password VARCHAR(255) NOT NULL ,
+                       status user_status DEFAULT 'active',
+                       created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                       updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE users (
+                       id BIGSERIAL PRIMARY KEY,
+                       public_id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+                       phone_number VARCHAR(20) UNIQUE NOT NULL,
                        status user_status DEFAULT 'active',
                        created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                        updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -23,6 +32,7 @@ CREATE TABLE users (
 CREATE TABLE      profiles (
                    id UUID PRIMARY KEY,
                    user_id UUID UNIQUE REFERENCES users(id),
+                   email VARCHAR(100) UNIQUE,
                    full_name TEXT,
                    date_of_birth DATE,
                    gender TEXT,
@@ -30,16 +40,16 @@ CREATE TABLE      profiles (
                    created_at TIMESTAMP,
                    updated_at TIMESTAMP
                );
-
-CREATE TABLE users (
-                       id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                       public_id CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
-                       phone_number VARCHAR(20) UNIQUE NOT NULL,
-                       email VARCHAR(100) UNIQUE,
-                       status ENUM('active', 'suspended', 'deleted') DEFAULT 'active',
-                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+--
+-- CREATE TABLE users (
+--                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
+--                        public_id CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
+--                        phone_number VARCHAR(20) UNIQUE NOT NULL,
+--                        email VARCHAR(100) UNIQUE,
+--                        status ENUM('active', 'suspended', 'deleted') DEFAULT 'active',
+--                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
 
 CREATE TABLE identity_documents (
                        id UUID PRIMARY KEY,
@@ -54,20 +64,18 @@ CREATE TABLE identity_documents (
                        UNIQUE (user_id, is_primary) WHERE is_primary = true -- enforce one primary document per user
                    );
 
-
+CREATE TYPE wallet_status AS ENUM ('active', 'frozen');
 CREATE TABLE wallets (
-                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                         public_id CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
-
-                         user_id BIGINT NOT NULL,
+                         id BIGSERIAL PRIMARY KEY,
+                         public_id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+                         user_id BIGINT NOT NULL UNIQUE,
                          balance DECIMAL(18,2) DEFAULT 0.00,
                          currency CHAR(3) DEFAULT 'MYR',
-                         status ENUM('active', 'frozen') DEFAULT 'active',
-
-                         FOREIGN KEY (user_id) REFERENCES users(id),
-                         UNIQUE(user_id)
+                         status wallet_status DEFAULT 'active',
+                         created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                         updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                         FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
 
 CREATE TABLE transactions (
                               id BIGINT PRIMARY KEY AUTO_INCREMENT,

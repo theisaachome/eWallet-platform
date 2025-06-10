@@ -9,6 +9,9 @@ import (
 )
 
 func sanityCheck() {
+
+	os.Setenv("JWT_SECRET", "supersecret123") // For testing only; use .env or config files in real projects
+
 	if os.Getenv("SERVER_ADDRESS") == "" ||
 		os.Getenv("SERVER_PORT") == "" {
 		log.Fatal("Environment variable SERVER_ADDRESS and SERVER_PORT not set")
